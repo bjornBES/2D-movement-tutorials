@@ -14,9 +14,9 @@ and then you must write
                 void Update()
                 {
                     movement(); 
-                    //player moves
                     WallJump(); 
-                    //player can walljump 
+                    //movement is so the player can move, jump...
+                    //wallJump is so the player can walljump 
                     //need to fix walljumping
                 }
             }
