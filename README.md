@@ -13,8 +13,10 @@ and then you must write
             {
                 void Update()
                 {
-                    movement(); //player moves
-                    WallJump(); //player can walljump 
+                    movement(); 
+                    //player moves
+                    WallJump(); 
+                    //player can walljump 
                     //need to fix walljumping
                 }
             }
