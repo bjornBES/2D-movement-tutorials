@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -8,6 +8,7 @@ namespace BEs.Tutorials.Movement._2D
     public class PlayerMovement : MonoBehaviour
     {
         [SerializeField] float movementSpeed = 15f;
+        [SerializeField] Vector2 TopDownMovenetSpeed = new Vector2(15,15);
         [SerializeField] float MaxSpeed = 35f;
         [SerializeField] float jumpForce = 15f;
         [SerializeField] bool wallJumps;
@@ -15,7 +16,7 @@ namespace BEs.Tutorials.Movement._2D
         [SerializeField] public Collider2D PlayerColl;
         [SerializeField] public int NumberOfJumps = 1;
         public int PreNumberOfJumps;
-        float HorizontalMovement;
+        Vector2 MoveMovement;
         [SerializeField] SpriteRenderer PlayerRenderer;
         [Header("layers")]
         [SerializeField] LayerMask grounde;
@@ -28,19 +29,20 @@ namespace BEs.Tutorials.Movement._2D
         [SerializeField] bool rayA;
         [SerializeField] bool rayB;
 
-
-
         void Awake()
         {
             PlayerRenderer.flipX = true;
 
             PreNumberOfJumps = NumberOfJumps;
         }
+        public void TopDownMovement()
+        {
+            TopDownWalk();
+        }
         public void movement()
         {
             BEsUpdate();
             sticking();
-            BEsUpdateLate();
             addRig();
         }
         public void addRig()
@@ -56,13 +58,11 @@ namespace BEs.Tutorials.Movement._2D
                 PlayerRig = gameObject.GetComponent<Rigidbody2D>();
             }
         }
-        void BEsUpdateLate()
-        {
-        }
         void BEsUpdate()
         {
 
-            HorizontalMovement = Input.GetAxis("Horizontal");
+            MoveMovement.x = Input.GetAxis("Horizontal");
+            MoveMovement.y = Input.GetAxis("Vertical");
 
             PlayerColl = gameObject.GetComponent<Collider2D>();
 
@@ -79,14 +79,14 @@ namespace BEs.Tutorials.Movement._2D
             if (Input.GetKeyDown(KeyCode.Space) && grounded == true)
             {
 
-                PlayerRig.velocity = new Vector2(HorizontalMovement * 5f, jumpForce);
+                PlayerRig.velocity = new Vector2(MoveMovement.x * 5f, jumpForce);
                 grounded = false;
 
             }
             if (Input.GetKeyDown(KeyCode.Space) && NumberOfJumps >= 1)
             {
 
-                PlayerRig.velocity = new Vector2(HorizontalMovement * 5f, jumpForce);
+                PlayerRig.velocity = new Vector2(MoveMovement.x * 5f, jumpForce);
                 NumberOfJumps--;
 
             }
@@ -97,6 +97,18 @@ namespace BEs.Tutorials.Movement._2D
             if (Input.GetAxis("Horizontal") > 0.1f || Input.GetAxis("Horizontal") < -0.1)
             {
                 transform.Translate(new Vector2(Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime, 0));
+            }
+        }
+        void TopDownWalk()
+        {
+            StartCoroutine(TopDownSpeed());
+            if (Input.GetAxis("Horizontal") > 0.1f || Input.GetAxis("Horizontal") < -0.1)
+            {
+                transform.Translate(new Vector2(Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime, 0));
+            }
+            if (Input.GetAxis("Vertical") > 0.1f || Input.GetAxis("Vertical") < -0.1)
+            {
+                transform.Translate(new Vector2(0,Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime));
             }
         }
         IEnumerator speed()
@@ -135,6 +147,80 @@ namespace BEs.Tutorials.Movement._2D
                     if (movementSpeed >= 15f)
                     {
                         movementSpeed -= (float)0.5;
+                    }
+                }
+            }
+        }
+        IEnumerator TopDownSpeed()
+        {
+            if (!(Input.anyKeyDown))
+            {
+                if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+                {
+                    PlayerRenderer.flipX = false;
+                    yield return new WaitForSeconds((float)0.1);
+                    if (!(TopDownMovenetSpeed.x >= MaxSpeed))
+                    {
+                        TopDownMovenetSpeed.x += (float)0.5;
+                    }
+                }
+                else if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+                {
+                    yield return new WaitForSeconds((float)0.1);
+                    if (TopDownMovenetSpeed.x >= 15f)
+                    {
+                        TopDownMovenetSpeed.x -= (float)0.5;
+                    }
+                }
+                if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+                {
+                    PlayerRenderer.flipX = true;
+                    yield return new WaitForSeconds((float)0.1);
+                    if (!(TopDownMovenetSpeed.x >= MaxSpeed))
+                    {
+                        TopDownMovenetSpeed.x += (float)0.5;
+                    }
+                }
+                else if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+                {
+                    yield return new WaitForSeconds((float)0.1);
+                    if (TopDownMovenetSpeed.x >= 15f)
+                    {
+                        TopDownMovenetSpeed.x -= (float)0.5;
+                    }
+                }
+
+                if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+                {
+                    PlayerRenderer.flipX = false;
+                    yield return new WaitForSeconds((float)0.1);
+                    if (!(TopDownMovenetSpeed.y >= MaxSpeed))
+                    {
+                        TopDownMovenetSpeed.y += (float)0.5;
+                    }
+                }
+                else if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+                {
+                    yield return new WaitForSeconds((float)0.1);
+                    if (TopDownMovenetSpeed.y >= 15f)
+                    {
+                        TopDownMovenetSpeed.y -= (float)0.5;
+                    }
+                }
+                if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
+                {
+                    yield return new WaitForSeconds((float)0.1);
+                    if (!(TopDownMovenetSpeed.y >= MaxSpeed))
+                    {
+                        TopDownMovenetSpeed.y += (float)0.5;
+                    }
+                }
+                else if (!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
+                {
+                    yield return new WaitForSeconds((float)0.1);
+                    if (TopDownMovenetSpeed.y >= 15f)
+                    {
+                        TopDownMovenetSpeed.y -= (float)0.5;
                     }
                 }
             }
